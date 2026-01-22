@@ -1,4 +1,4 @@
 # Alchemy
 Ai tool that that is converts your marketing ideas into fully developed posters.
 <br>
-Mahesh And Suhas Akash Soham Sankeerth Team Pentagon
+Team Members : Akash, Mahesh, Sankeerth, Soham, Suhas
