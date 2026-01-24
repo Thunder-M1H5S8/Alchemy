@@ -19,7 +19,7 @@ app = FastAPI(title="Hackathon Backend - MVP")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # allow all for hackathon
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
