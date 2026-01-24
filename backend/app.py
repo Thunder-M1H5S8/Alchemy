@@ -7,6 +7,8 @@ from pydantic import BaseModel
 from pathlib import Path
 import json
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
+
 
 BASE = Path(__file__).resolve().parent
 DATA_DIR = BASE.parent.joinpath("data")
@@ -14,6 +16,15 @@ JOBS_DIR = DATA_DIR.joinpath("jobs")
 JOBS_DIR.mkdir(parents=True, exist_ok=True)
 
 app = FastAPI(title="Hackathon Backend - MVP")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # allow all for hackathon
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 class GenerateRequest(BaseModel):
     prompt: str
