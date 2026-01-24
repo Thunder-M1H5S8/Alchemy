@@ -13,19 +13,27 @@
 
 body {
     margin: 0;
-    background-color: #2C2C2C;
+    background-color: #000010;
 }
 
 /* Header */
 header {
-    background-color: #4f46e5;
+    position: sticky ;
+    top:0;
+    z-index: 1000;
+    background-color: #000024;
     color: white;
     padding: 25px 10px;
     text-align: center;
+    
 }
 
 header h1 {
+    
     margin: 0;
+    font-family: "Hammers";
+    Font-size: 70px;
+    color:#c20000;
 }
 
 /* Layout */
@@ -39,23 +47,31 @@ main {
 }
 
 section {
-    background-color: #6B4D47;
+    background-color: #830000;
     padding: 25px;
     border-radius: 8px;
+    border:outset;
+    border-color:#830001;
 }
 
 /* Form */
 label {
     color: white;
+    font-family: 'Hammers';
+    font-size:20px;
     font-weight: bold;
+
 }
 
 textarea {
     width: 100%;
-    padding: 12px;
+    padding: 11px;
     border-radius: 6px;
-    border: none;
+    border: outset;
     margin-top: 15px;
+    text-align:center;
+    background-color:#FFF0EB;
+    color:#830000;
 }
 
 /* Button */
@@ -64,11 +80,13 @@ button {
     margin-top: 15px;
     margin-left: 325px;
     padding: 12px 20px;
-    background: #47656B;
-    color: white;
-    border: 2px solid #4f46e5;
+    background:#BC8563;
+;
+    color: #830000;
+    border: 2px outset #830000;
     border-radius: 6px;
     font-size: 14px;
+    font-family:"calibiri",bold;
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -76,7 +94,8 @@ button {
 }
 
 button:hover {
-    background-color: #4f46e5;
+    background-color: #FF3
+;
 }
 
 /* Hover underline effect */
@@ -113,13 +132,16 @@ button:hover {
     min-height: 150px;
     padding: 15px;
     border-radius: 6px;
+    text-align :center;
+    background-color:#FFF0EB;
 }
 
 /* Footer */
 footer {
     text-align: center;
     padding: 56px;
-    background:#FFFFFF;
+    background-color:#01000c;
+    color:white;
 }
 </style>
 </head>
@@ -145,7 +167,7 @@ footer {
     </section>
 </main>
 
-<<footer>
+<footer>
    <p> - Alchemy</p>
    <p> By Team Pentagon</p>
 </footer>
