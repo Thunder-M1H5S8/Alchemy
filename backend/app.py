@@ -1,96 +1,120 @@
 # backend/app.py
-# Outline of the main course
 import uuid
-import os
-from fastapi import FastAPI, BackgroundTasks, HTTPException
+import json
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from pathlib import Path
-import json
-from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
 
+from gemini import generate_image, generate_tags
+from logic import apply_vote, build_next_prompt
+from storage import save_session, load_session, session_dir
 
-BASE = Path(__file__).resolve().parent
-DATA_DIR = BASE.parent.joinpath("data")
-JOBS_DIR = DATA_DIR.joinpath("jobs")
-JOBS_DIR.mkdir(parents=True, exist_ok=True)
-
-app = FastAPI(title="Hackathon Backend - MVP")
+app = FastAPI(title="Alchemy Backend")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# ----------- Models -----------
 
-class GenerateRequest(BaseModel):
+class StartSessionRequest(BaseModel):
     prompt: str
-    template: str = "insta_square"
 
-def _job_path(job_id: str) -> Path:
-    return JOBS_DIR.joinpath(job_id + ".json")
+class VoteRequest(BaseModel):
+    session_id: str
+    image_id: str
+    vote: str  # like / dislike
 
-def enqueue_job(prompt: str, template: str) -> str:
-    job_id = uuid.uuid4().hex[:12]
-    job = {
-        "id": job_id,
-        "prompt": prompt,
-        "template": template,
-        "status": "queued",
-        "created_at": datetime.utcnow().isoformat(),
-        "result": None,
-        "error": None
+class NextBatchRequest(BaseModel):
+    session_id: str
+
+
+# ----------- Helpers -----------
+
+def generate_batch(session: dict):
+    batch_id = session["current_batch"]
+    base_prompt = session["prompt"]
+    prompt = build_next_prompt(base_prompt, session["tag_scores"])
+
+    batch_dir = session_dir(session["session_id"]) / f"batch_{batch_id}"
+    batch_dir.mkdir(parents=True, exist_ok=True)
+
+    images = []
+
+    for _ in range(4):
+        image_id = uuid.uuid4().hex[:8]
+        img_path = batch_dir / f"{image_id}.png"
+
+        generate_image(prompt, img_path)
+        tags = generate_tags(prompt)
+
+        meta = {
+            "image_id": image_id,
+            "tags": tags,
+            "url": str(img_path)
+        }
+
+        (batch_dir / f"{image_id}.json").write_text(json.dumps(meta, indent=2))
+        images.append(meta)
+
+    session["current_batch"] += 1
+    save_session(session)
+    return images
+
+
+# ----------- Routes -----------
+
+@app.post("/api/session/start")
+def start_session(req: StartSessionRequest):
+    session_id = uuid.uuid4().hex[:10]
+
+    session = {
+        "session_id": session_id,
+        "prompt": req.prompt,
+        "tag_scores": {},
+        "current_batch": 1
     }
-    p = _job_path(job_id)
-    p.write_text(json.dumps(job))
-    return job_id
 
-@app.post("/api/generate", status_code=202)
-async def generate(req: GenerateRequest, background_tasks: BackgroundTasks):
-    job_id = enqueue_job(req.prompt, req.template)
-    # Schedule background placeholder worker (quick demo safe fallback)
-    background_tasks.add_task(run_placeholder_worker, job_id)
-    return {"job_id": job_id, "status": "queued"}
+    save_session(session)
+    images = generate_batch(session)
 
-@app.get("/api/status/{job_id}")
-async def status(job_id: str):
-    p = _job_path(job_id)
-    if not p.exists():
-        raise HTTPException(status_code=404, detail="job not found")
-    job = json.loads(p.read_text())
-    return job
+    return {
+        "session_id": session_id,
+        "batch": 1,
+        "images": images
+    }
+
+
+@app.post("/api/vote")
+def vote(req: VoteRequest):
+    session = load_session(req.session_id)
+
+    for batch in session_dir(req.session_id).iterdir():
+        meta_file = batch / f"{req.image_id}.json"
+        if meta_file.exists():
+            image = json.loads(meta_file.read_text())
+            apply_vote(session["tag_scores"], image["tags"], req.vote)
+            save_session(session)
+            return {"status": "recorded"}
+
+    raise HTTPException(status_code=404, detail="image not found")
+
+
+@app.post("/api/session/next")
+def next_batch(req: NextBatchRequest):
+    session = load_session(req.session_id)
+    images = generate_batch(session)
+    return {
+        "batch": session["current_batch"] - 1,
+        "images": images
+    }
+
 
 @app.get("/healthz")
-async def health():
+def health():
     return {"ok": True}
-    
-# Simple placeholder worker that creates a PNG with prompt text
-def run_placeholder_worker(job_id: str):
-    try:
-        p = _job_path(job_id)
-        job = json.loads(p.read_text())
-        job["status"] = "started"
-        p.write_text(json.dumps(job))
-        # create an image file with Pillow
-        from PIL import Image, ImageDraw, ImageFont
-        out_dir = JOBS_DIR.joinpath(job_id)
-        out_dir.mkdir(exist_ok=True)
-        img_path = out_dir.joinpath("preview.png")
-        img = Image.new("RGB", (1080,1080), color=(240,240,240))
-        draw = ImageDraw.Draw(img)
-        text = job["prompt"][:200]
-        try:
-            font = ImageFont.load_default()
-        except:
-            font = None
-        draw.text((40,40), text, fill=(20,20,20), font=font)
-        img.save(img_path)
-        job["status"] = "done"
-        job["result"] = {"preview": str(img_path)}
-        p.write_text(json.dumps(job))
-    except Exception as e:
-        job = {"id": job_id, "status": "failed", "error": str(e)}
-        _job_path(job_id).write_text(json.dumps(job))
