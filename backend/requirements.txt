@@ -9,4 +9,4 @@ requests
 sqlalchemy
 alembic
 gunicorn
-EOF
+
