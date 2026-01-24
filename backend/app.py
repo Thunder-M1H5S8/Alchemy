@@ -1,4 +1,5 @@
 # backend/app.py
+# Outline of the main course
 import uuid
 import os
 from fastapi import FastAPI, BackgroundTasks, HTTPException
