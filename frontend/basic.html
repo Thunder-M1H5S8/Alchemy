@@ -1,159 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>AI Template Generator</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>AI Template Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        /* Reset */
-        * {
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, serif;
-        }
+<style>
+* {
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
 
-        body {
-            margin: 0;
-            background-color: #2C2C2C;
-            color: #333;
-        }
+body {
+    margin: 0;
+    background-color: #2C2C2C;
+}
 
-        /* Header */
-        header {
-            background-color: #4f46e5;
-            color: white;
-            padding: 25px 10px;
-            text-align: center;
-        }
+/* Header */
+header {
+    background-color: #4f46e5;
+    color: white;
+    padding: 25px 10px;
+    text-align: center;
+}
 
-        header h1 {
-            margin: 0;
-            font-family :'Williwaw',;
-        }
+header h1 {
+    margin: 0;
+}
 
-        header p {
-            margin-top: 8px;
-            font-size: 14px;
-            opacity: 0.9;
-        }
+/* Layout */
+main {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
 
-        /* Main layout */
-        main {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
+section {
+    background-color: #6B4D47;
+    padding: 25px;
+    border-radius: 8px;
+}
 
-        section {
-            background-color: #6B4D47;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
+/* Form */
+label {
+    color: white;
+    font-weight: bold;
+}
 
-        /* Form */
-        label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 8px;
-        }
+textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: none;
+    margin-top: 10px;
+}
 
-        textarea {
-            color: #BD2100;
-            width: 100%;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            resize: none;
-            font-size: 14px;
-        }
+/* Button */
+button {
+    margin-top: 15px;
+    padding: 12px 20px;
+    background: transparent;
+    color: white;
+    border: 2px solid #4f46e5;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: 0.3s;
+}
 
-        textarea:focus {
-            outline: none;
-            border-color: #4f46e5;
-        }
+button:hover {
+    background-color: #4f46e5;
+}
 
-        button {
-            margin-top: 15px;
-            padding: 12px 20px;
-            background-color: #4f46e5;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+/* Hover underline effect */
+.hover-underline::after,
+.hover-underline::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, #ff0000, #00ffff);
+    left: 0;
+    transform: scaleX(0);
+    transition: transform 0.4s ease-out;
+}
 
-        button:hover {
-            background-color: #4338ca;
-        }
+.hover-underline::after {
+    bottom: 4px;
+    transform-origin: right;
+}
 
-        /* Output */
-        #output {
-            margin-top: 15px;
-            padding: 15px;
-            background-color: #f9fafb;
-            border-radius: 6px;
-            min-height: 150px;
-            border: 1px dashed #ccc;
-            font-size: 14px;
-            color: #555;
-        }
+.hover-underline::before {
+    top: 4px;
+    transform-origin: left;
+}
 
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 15px;
-            background: #e5e7eb;
-            font-size: 13px;
-            color: #555;
-        }
+.hover-underline:hover::after,
+.hover-underline:hover::before {
+    transform: scaleX(1);
+}
 
-        /* Responsive */
-        @media (max-width: 700px) {
-            main {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+/* Output */
+#output {
+    background: #f9fafb;
+    min-height: 150px;
+    padding: 15px;
+    border-radius: 6px;
+}
 
+/* Footer */
+footer {
+    text-align: center;
+    padding: 15px;
+    background: #e5e7eb;
+}
+</style>
 </head>
+
 <body>
 
-    <!-- Header -->
-    <header>
-        <h1>Alchemy</h1>
-        <p>Enter a short prompt and get a ready template</p>
-    </header>
+<header>
+    <h1>Alchemy</h1>
+    <p>Enter a short prompt and get a ready template</p>
+</header>
 
-    <!-- Prompt Input Section -->
-    <main>
-        <section>
-            <form>
-                <label for="prompt">Your Prompt</label>
-                <textarea id="prompt" name="prompt" rows="4" placeholder="e.g. portfolio website for student"></textarea>
-                <button type="submit">Generate Template</button>
-            </form>
-        </section>
+<main>
+    <section>
+        <label>Your Prompt</label>
+        <textarea rows="4" placeholder="e.g. portfolio website for student"></textarea>
+        <br>
+        <button class="hover-underline">Generate Template</button>
+    </section>
 
-        <!-- Output Section -->
-        <section>
-            <h2>Generated Template</h2>
-            <div id="output">
-                AI generated template will appear here...
-            </div>
-        </section>
-    </main>
+    <section>
+        <h2>Generated Template</h2>
+        <div id="output">AI generated template will appear here…</div>
+    </section>
+</main>
 
-    <!-- Footer -->
-    <footer>
-        <p>Powered by AI</p>
-    </footer>
+<footer>
+    Powered by AI
+</footer>
 
 </body>
 </html>
-
