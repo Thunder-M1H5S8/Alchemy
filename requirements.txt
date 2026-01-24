@@ -1,12 +1,7 @@
 fastapi
 uvicorn[standard]
-rq
-redis
 python-dotenv
 pillow
 aiofiles
 requests
-sqlalchemy
-alembic
-gunicorn
-
+google-genai
