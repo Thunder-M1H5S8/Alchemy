@@ -15,7 +15,7 @@ generateBtn.addEventListener("click", async () => {
   outputDiv.innerText = "Generating…";
 
   try {
-    // 1️⃣ Send prompt to backend
+    //Send prompt to backend
     const res = await fetch(`${API_BASE}/api/generate`, {
       method: "POST",
       headers: {
@@ -32,7 +32,7 @@ generateBtn.addEventListener("click", async () => {
 
     outputDiv.innerText = `Job queued (ID: ${jobId}). Processing…`;
 
-    // 2️⃣ Poll status once after 2 seconds (simple + safe)
+    //Poll status once after 2 seconds (simple + safe)
     setTimeout(async () => {
       const statusRes = await fetch(`${API_BASE}/api/status/${jobId}`);
       const job = await statusRes.json();
