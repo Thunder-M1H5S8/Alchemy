@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Template Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        /* Reset */
+        * {
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, serif;
+        }
+
+        body {
+            margin: 0;
+            background-color: #2C2C2C;
+            color: #333;
+        }
+
+        /* Header */
+        header {
+            background-color: #4f46e5;
+            color: white;
+            padding: 25px 10px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-family :'Williwaw',;
+        }
+
+        header p {
+            margin-top: 8px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Main layout */
+        main {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        section {
+            background-color: #6B4D47;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        /* Form */
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        textarea {
+            color: #BD2100;
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            resize: none;
+            font-size: 14px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 20px;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #4338ca;
+        }
+
+        /* Output */
+        #output {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f9fafb;
+            border-radius: 6px;
+            min-height: 150px;
+            border: 1px dashed #ccc;
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #e5e7eb;
+            font-size: 13px;
+            color: #555;
+        }
+
+        /* Responsive */
+        @media (max-width: 700px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>Alchemy</h1>
+        <p>Enter a short prompt and get a ready template</p>
+    </header>
+
+    <!-- Prompt Input Section -->
+    <main>
+        <section>
+            <form>
+                <label for="prompt">Your Prompt</label>
+                <textarea id="prompt" name="prompt" rows="4" placeholder="e.g. portfolio website for student"></textarea>
+                <button type="submit">Generate Template</button>
+            </form>
+        </section>
+
+        <!-- Output Section -->
+        <section>
+            <h2>Generated Template</h2>
+            <div id="output">
+                AI generated template will appear here...
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>Powered by AI</p>
+    </footer>
+
+</body>
+</html>
+
