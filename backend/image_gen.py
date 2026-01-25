@@ -1,30 +1,17 @@
 # backend/image_gen.py
+from PIL import Image, ImageDraw
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
-import random
 
 def generate_image(prompt: str, out_path: Path):
-    """
-    Hackathon-safe fallback image generator.
-    Always succeeds. No external APIs.
-    """
-
-    # Random dark background (looks intentional)
-    bg = (
-        random.randint(20, 50),
-        random.randint(20, 50),
-        random.randint(40, 70),
-    )
-
-    img = Image.new("RGB", (1024, 1024), bg)
+    img = Image.new("RGB", (1024, 1024), (250, 250, 250))
     draw = ImageDraw.Draw(img)
 
-    text = "AI Image\n\n" + prompt[:120]
+    # header bar
+    draw.rectangle((0, 0, 1024, 160), fill=(30, 30, 30))
+    draw.text((40, 60), "Alchemy Preview", fill=(255, 255, 255))
 
-    draw.text(
-        (60, 400),
-        text,
-        fill=(220, 220, 220),
-    )
+    # prompt preview
+    draw.rectangle((0, 860, 1024, 1024), fill=(20, 20, 20))
+    draw.text((40, 900), prompt[:120], fill=(255, 255, 255))
 
     img.save(out_path)
