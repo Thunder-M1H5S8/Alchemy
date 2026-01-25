@@ -15,6 +15,26 @@
             --gold-accent: #c5a059;
             --deep-slate: #121212;
         }
+        /* Pentagon Seal Styling */
+        .pentagon-seal-container {
+            width: 100px; height: 100px; margin: 0 auto;
+            filter: drop-shadow(0 0 10px var(--blood-red));
+        }
+        .profile-seal-pentagon {
+            width: 100%; height: 100%; fill: #000;
+            stroke: var(--gold-accent); stroke-width: 2;
+            transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pentagon-seal-container:hover .profile-seal-pentagon {
+            stroke: var(--bright-red);
+            filter: drop-shadow(0 0 15px var(--bright-red));
+            transform: rotate(72deg);
+        }
+        .seal-glyph {
+            fill: var(--blood-red); font-size: 35px;
+            text-anchor: middle; font-family: serif; pointer-events: none;
+        }
+
 
         body {
             font-family: 'Quicksand', sans-serif;
@@ -217,10 +237,27 @@
 
         .modal-content { background: #000; border: 2px solid var(--blood-red); border-radius: 0; }
 
+       /* TEAM PENTAGON FOOTER */
+        .alchemy-footer {
+            margin-top: auto; padding: 40px 0;
+            background: linear-gradient(to top, #000 0%, var(--void-black) 100%);
+            position: relative; border-top: 1px solid rgba(163, 0, 0, 0.3);
+        }
+        .footer-line {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 150px; height: 2px; background: linear-gradient(90deg, transparent, var(--gold-accent), transparent);
+        }
+        .footer-content { display: flex; align-items: center; justify-content: center; gap: 20px; }
+        .footer-text { font-size: 1rem; color: #888; text-transform: uppercase; margin: 0; }
+        .footer-text .team { color: var(--gold-accent); font-weight: 900; }
+        .footer-text .divider { color: var(--blood-red); margin: 0 10px; }
+        .symbol { font-size: 1.2rem; color: var(--blood-red); opacity: 0.6; }
+
+        .modal-content { background: #000; border: 2px solid var(--blood-red); border-radius: 0; }
+
         @media (max-width: 992px) {
             .sidebar { display: none; }
-            header, main { margin-left: 0; }
-            .nav-orb { display: none; }
+            header, main, footer { margin-left: 0; }
         }
     </style>
 </head>
@@ -230,7 +267,10 @@
 
 <div class="sidebar">
     <div class="text-center">
-        <img src="https://via.placeholder.com/80/550000/ffffff?text=🜔" class="profile-seal" alt="Seal">
+       <svg class="profile-seal-pentagon" viewBox="0 0 100 100">
+                <polygon points="50,5 95,38 78,92 22,92 5,38" />
+                <text x="50" y="65" class="seal-glyph">🜔</text>
+            </svg>
         <h5 class="alchemy-font text-white">The Alchemist</h5>
         <hr style="border-color: var(--blood-red)">
     </div>
@@ -271,6 +311,19 @@
         <button id="viewBtn">Open Vision Stack</button>
     </div>
 </main>
+
+<footer class="alchemy-footer">
+    <div class="footer-line"></div>
+    <div class="container text-center">
+        <div class="footer-content">
+            <span class="symbol">🜁</span>
+            <p class="footer-text alchemy-font">
+                Alchemy <span class="divider">|</span> <span class="team">By Team Pentagon</span>
+            </p>
+            <span class="symbol">🜃</span>
+        </div>
+    </div>
+</footer>
 
 <div class="modal fade" id="swipeModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
