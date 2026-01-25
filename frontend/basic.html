@@ -289,6 +289,26 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     const state = { images: [] };
+    const API_URL = "http://localhost:8000/generate";
+
+    async function generateFromBackend(prompt, contentType) {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                prompt: prompt,
+                contentType: contentType,
+                count: 3
+            })
+        });
+
+        if (!res.ok) {
+            const text = await res.text();
+            throw new Error(text);
+        }
+
+        return res.json();
+    }
 
     function showToast(text, color) {
         const toast = document.getElementById('status-toast');
@@ -296,13 +316,16 @@
         toast.style.borderColor = color;
         toast.style.color = color;
         toast.classList.remove('toast-active');
-        void toast.offsetWidth; 
+        void toast.offsetWidth;
         toast.classList.add('toast-active');
     }
 
-    document.getElementById('genBtn').addEventListener('click', () => {
-        const val = document.getElementById('prompt').value;
-        if(!val) return;
+    // SINGLE click handler (no duplicates)
+    document.getElementById('genBtn').addEventListener('click', async () => {
+        const prompt = document.getElementById('prompt').value.trim();
+        const contentType = document.getElementById('contentType').value;
+
+        if (!prompt) return;
 
         const loader = document.getElementById('transmuteLoader');
         const viewBtn = document.getElementById('viewBtn');
@@ -310,32 +333,34 @@
         viewBtn.style.display = 'none';
         loader.style.display = 'block';
 
-        setTimeout(() => {
-            state.images = [
-                { url: 'https://picsum.photos/seed/v1/400/600' },
-                { url: 'https://picsum.photos/seed/v2/400/600' },
-                { url: 'https://picsum.photos/seed/v3/400/600' }
-            ];
+        try {
+            const data = await generateFromBackend(prompt, contentType);
 
-            const h = document.getElementById('spellHistory');
-            const item = document.createElement('div');
-            item.className = 'history-item';
-            item.innerText = `🝗 ${val.substring(0, 20)}...`;
-            h.prepend(item);
+            // Backend returns: { tags: [...], images: [...] }
+            state.images = (data.images || []).map(url => ({ url }));
 
             loader.style.display = 'none';
             viewBtn.style.display = 'block';
-        }, 2500);
+
+        } catch (err) {
+            console.error("Transmutation error:", err);
+            loader.style.display = 'none';
+            alert("Transmutation failed – check console");
+        }
     });
+
+    // ---- everything below stays as-is (swipe logic) ----
 
     function triggerSwipe(card, direction) {
         const dir = direction === 'right' ? 1 : -1;
         card.style.transition = 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.5s';
         card.style.transform = `translateX(${dir * 800}px) rotate(${dir * 45}deg)`;
         card.style.opacity = '0';
-        
-        showToast(direction === 'right' ? "VISION SAVED" : "DISCARDED", 
-                  direction === 'right' ? "var(--gold-accent)" : "var(--blood-red)");
+
+        showToast(
+            direction === 'right' ? "VISION SAVED" : "DISCARDED",
+            direction === 'right' ? "var(--gold-accent)" : "var(--blood-red)"
+        );
 
         setTimeout(() => card.remove(), 600);
     }
@@ -344,7 +369,10 @@
         const card = document.createElement('div');
         card.className = 'swipe-card';
         card.style.zIndex = state.images.length - index;
-        card.innerHTML = `<img src="${imgData.url}"><div class="card-meta">VISION #${index + 1}</div>`;
+        card.innerHTML = `
+            <img src="${imgData.url}">
+            <div class="card-meta">VISION #${index + 1}</div>
+        `;
 
         let startX = 0, curX = 0, startTime = 0;
 
@@ -370,14 +398,16 @@
         };
 
         card.addEventListener('mousedown', (e) => {
-            startX = e.clientX; startTime = Date.now();
+            startX = e.clientX;
+            startTime = Date.now();
             card.style.transition = 'none';
             document.addEventListener('mousemove', move);
             document.addEventListener('mouseup', end);
         });
 
         card.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX; startTime = Date.now();
+            startX = e.touches[0].clientX;
+            startTime = Date.now();
             card.style.transition = 'none';
             document.addEventListener('touchmove', move);
             document.addEventListener('touchend', end);
@@ -385,32 +415,7 @@
 
         return card;
     }
-
-    document.getElementById('viewBtn').addEventListener('click', () => {
-        const container = document.getElementById('swipeContainer');
-        container.innerHTML = `
-            <div class="nav-orb orb-left">🡄</div>
-            <div class="nav-orb orb-right">🡆</div>
-        `;
-        
-        state.images.forEach((img, i) => container.appendChild(createCard(img, i)));
-        new bootstrap.Modal('#swipeModal').show();
-
-        container.querySelector('.orb-left').onclick = () => handleNav('left');
-        container.querySelector('.orb-right').onclick = () => handleNav('right');
-    });
-
-    function handleNav(direction) {
-        const cards = document.getElementsByClassName('swipe-card');
-        if (cards.length > 0) triggerSwipe(cards[0], direction);
-    }
-
-    document.addEventListener('keydown', (e) => {
-        if (document.getElementById('swipeModal').classList.contains('show')) {
-            if (e.key === 'ArrowRight') handleNav('right');
-            if (e.key === 'ArrowLeft') handleNav('left');
-        }
-    });
 </script>
+
 </body>
 </html>
